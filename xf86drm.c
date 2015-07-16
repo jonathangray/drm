@@ -309,7 +309,7 @@ static int drmMatchBusID(const char *id1, const char *id2, int pci_domain_ok)
  * If any other failure happened then it will output error message using
  * drmMsg() call.
  */
-#if !UDEV
+#if !UDEV && !defined(__OpenBSD__)
 static int chown_check_return(const char *path, uid_t owner, gid_t group)
 {
         int rv;
@@ -361,7 +361,7 @@ static int drmOpenDevice(dev_t dev, int minor, int type)
     int             fd;
     mode_t          devmode = DRM_DEV_MODE, serv_mode;
     gid_t           serv_group;
-#if !UDEV
+#if !UDEV && !defined(__OpenBSD__)
     int             isroot  = !geteuid();
     uid_t           user    = DRM_DEV_UID;
     gid_t           group   = DRM_DEV_GID;
@@ -379,6 +379,7 @@ static int drmOpenDevice(dev_t dev, int minor, int type)
         devmode &= ~(S_IXUSR|S_IXGRP|S_IXOTH);
     }
 
+#ifndef __OpenBSD__
 #if !UDEV
     if (stat(DRM_DIR_NAME, &st)) {
         if (!isroot)
@@ -425,6 +426,7 @@ wait_for_udev:
         }
     }
 #endif
+#endif /* __OpenBSD__ */
 
     fd = open(buf, O_RDWR | O_CLOEXEC, 0);
     drmMsg("drmOpenDevice: open result is %d, (%s)\n",
@@ -432,7 +434,7 @@ wait_for_udev:
     if (fd >= 0)
         return fd;
 
-#if !UDEV
+#if !UDEV && !defined(__OpenBSD__)
     /* Check if the device node is not what we expect it to be, and recreate it
      * and try again if so.
      */
