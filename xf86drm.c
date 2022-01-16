@@ -4551,6 +4551,7 @@ drm_public int drmGetDeviceFromDevId(dev_t find_rdev, uint32_t flags, drmDeviceP
     const char      *dev_name;
     int              node_type, subsystem_type;
     int              maj, min, n, ret;
+    struct stat sbuf;
 
     if (device == NULL)
         return -EINVAL;

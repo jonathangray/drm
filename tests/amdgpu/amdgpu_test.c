@@ -591,6 +591,8 @@ int amdgpu_open_device_on_test_index(int render_node)
 
 }
 
+#undef DRM_MAJOR
+#define DRM_MAJOR 87
 
 static bool amdgpu_node_is_drm(int maj, int min)
 {
